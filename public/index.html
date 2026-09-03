@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Durez Ban Checker</title>
+  <style>
+    /* ----- RESET & BASE ----- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #1a1a1a;
+      color: #f5f5f5;
+      font-family: 'Garamond', 'Playfair Display', serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    /* ----- CONTAINER ----- */
+    .container {
+      background-color: #1a1a1a;
+      border: 2px solid #3a3a3a;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.9), 0 0 30px rgba(139, 0, 0, 0.15);
+      padding: 50px 40px 40px 40px;
+      max-width: 600px;
+      width: 100%;
+      position: relative;
+    }
+
+    .container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 6px;
+      background: linear-gradient(90deg, #8b0000, #d4af37, #8b0000);
+    }
+
+    /* ----- HEADER / LOGO AREA ----- */
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .logo-placeholder {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 20px auto;
+      background-color: #2a2a2a;
+      border: 2px solid #3a3a3a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: #3a3a3a;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      background-image: url('your-logo.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+
+    .logo-placeholder span {
+      display: none;
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      font-weight: 700;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: #f5f5f5;
+      text-shadow: 0 0 20px rgba(139, 0, 0, 0.4);
+      margin-bottom: 6px;
+    }
+
+    .subhead {
+      color: #8b0000;
+      font-size: 0.9rem;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      border-top: 1px solid #3a3a3a;
+      border-bottom: 1px solid #3a3a3a;
+      padding: 8px 0;
+      display: inline-block;
+      font-weight: 400;
+    }
+
+    /* ----- INPUT AREA ----- */
+    .input-group {
+      margin: 40px 0 30px 0;
+    }
+
+    label {
+      display: block;
+      font-size: 0.8rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #8b0000;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 16px 18px;
+      background-color: #111111;
+      border: 2px solid #3a3a3a;
+      color: #f5f5f5;
+      font-size: 1.1rem;
+      font-family: 'Garamond', serif;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input[type="text"]:focus {
+      border-color: #d4af37;
+      box-shadow: 0 0 20px rgba(212, 175, 55, 0.1);
+    }
+
+    input[type="text"]::placeholder {
+      color: #3a3a3a;
+      font-style: italic;
+    }
+
+    /* ----- BUTTON ----- */
+    .btn-check {
+      width: 100%;
+      padding: 18px 0;
+      background-color: #3a3a3a;
+      border: 2px solid #3a3a3a;
+      color: #f5f5f5;
+      font-size: 1.3rem;
+      font-family: 'Garamond', serif;
+      font-weight: 700;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      margin-top: 10px;
+      position: relative;
+    }
+
+    .btn-check:hover {
+      background-color: #2a2a2a;
+      border-color: #8b0000;
+      box-shadow: 0 0 30px rgba(139, 0, 0, 0.3);
+      color: #ffffff;
+    }
+
+    .btn-check:active {
+      border-color: #d4af37;
+      box-shadow: 0 0 40px rgba(212, 175, 55, 0.2);
+      transform: scale(0.98);
+    }
+
+    .btn-check:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+
+    /* ----- STATUS RESULT ----- */
+    .result-box {
+      margin-top: 30px;
+      padding: 20px;
+      border: 2px solid #3a3a3a;
+      min-height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      background-color: #111111;
+      color: #f5f5f5;
+      transition: border-color 0.3s, background 0.3s;
+      word-break: break-word;
+    }
+
+    .result-box.loading {
+      border-color: #d4af37;
+      color: #d4af37;
+      font-size: 1.2rem;
+      letter-spacing: 6px;
+    }
+
+    .result-box.banned {
+      border-color: #8b0000;
+      background-color: #1a0808;
+      color: #8b0000;
+      text-shadow: 0 0 30px rgba(139, 0, 0, 0.3);
+      font-size: 2rem;
+    }
+
+    .result-box.not-banned {
+      border-color: #3a3a3a;
+      color: #d4af37;
+      text-shadow: 0 0 20px rgba(212, 175, 55, 0.1);
+    }
+
+    .result-box.error {
+      border-color: #8b0000;
+      color: #8b0000;
+      font-size: 1rem;
+    }
+
+    /* ----- FOOTER ----- */
+    .footer {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid #3a3a3a;
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.7rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #3a3a3a;
+    }
+
+    .footer a {
+      color: #3a3a3a;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer a:hover {
+      color: #8b0000;
+    }
+
+    /* ----- RESPONSIVE ----- */
+    @media (max-width: 500px) {
+      .container {
+        padding: 30px 20px;
+      }
+      h1 {
+        font-size: 2rem;
+      }
+      .result-box {
+        font-size: 1.2rem;
+        padding: 16px;
+      }
+      .result-box.banned {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header">
+      <div class="logo-placeholder">
+        <span>LOGO</span>
+      </div>
+      <h1>DUREZ<br />CHECKER</h1>
+      <div class="subhead">Ban Intelligence</div>
+    </div>
+
+    <div class="input-group">
+      <label for="numberInput">Phone Number</label>
+      <input
+        type="text"
+        id="numberInput"
+        placeholder="+49123456789 or 0151..."
+        autofocus
+      />
+    </div>
+
+    <button class="btn-check" id="checkBtn">Check Ban Status</button>
+
+    <div class="result-box" id="resultBox">
+      <span>Awaiting number...</span>
+    </div>
+
+    <div class="footer">
+      <span>CLOUDFLARE</span>
+      <span><a href="#">Privacy</a> • <a href="#">Help</a></span>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      const numberInput = document.getElementById('numberInput');
+      const checkBtn = document.getElementById('checkBtn');
+      const resultBox = document.getElementById('resultBox');
+
+      function setResult(text, type = '') {
+        resultBox.innerHTML = text;
+        resultBox.className = 'result-box';
+        if (type) {
+          resultBox.classList.add(type);
+        }
+      }
+
+      async function checkBan() {
+        let rawNumber = numberInput.value.trim();
+
+        if (!rawNumber) {
+          setResult('Please enter a phone number.', 'error');
+          return;
+        }
+
+        checkBtn.disabled = true;
+        setResult('VERIFYING...', 'loading');
+
+        try {
+          const response = await fetch('/api/check-ban', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ number: rawNumber })
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            const errorMsg = data.error || 'Service error. Please try again.';
+            setResult(`⚠️ ${errorMsg}`, 'error');
+            return;
+          }
+
+          const status = (data.status || data.ban_status || data.result || '').toString().toLowerCase();
+          const isBanned = status.includes('banned') ||
+                           status.includes('perm') ||
+                           status.includes('permanent') ||
+                           status.includes('blocked') ||
+                           status.includes('restricted');
+
+          const isTemp = status.includes('temp') ||
+                         status.includes('temporary') ||
+                         status.includes('review') ||
+                         status.includes('under review');
+
+          const stringified = JSON.stringify(data).toLowerCase();
+          const deepBanned = stringified.includes('banned') || stringified.includes('blocked');
+          const deepTemp = stringified.includes('temp') || stringified.includes('review');
+
+          const finalBanned = isBanned || deepBanned;
+          const finalTemp = isTemp || deepTemp;
+
+          if (finalBanned || finalTemp) {
+            setResult('🔥 EBA SERVED BY DUREZ HEHE', 'banned');
+          } else {
+            setResult('💀 U NEVER BUY GARRI NAH', 'not-banned');
+          }
+
+        } catch (error) {
+          console.error('Check error:', error);
+          setResult('⚠️ Network error. Check your connection.', 'error');
+        } finally {
+          checkBtn.disabled = false;
+        }
+      }
+
+      checkBtn.addEventListener('click', checkBan);
+      numberInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          checkBan();
+        }
+      });
+
+      numberInput.focus();
+    })();
+  </script>
+
+</body>
+  </html>
