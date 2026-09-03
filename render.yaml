@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: durez-ban-checker
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: WHATSAPP_API_KEY
+        sync: false
+    plan: free
